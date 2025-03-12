@@ -27,4 +27,4 @@ def show_page():
 
             # Save in session state
             st.session_state[PROFILE_PIC_KEY] = image
-            st.experimental_rerun()  # Refresh the page to show uploaded image
+            st.rerun()  # Refresh the page to show uploaded image

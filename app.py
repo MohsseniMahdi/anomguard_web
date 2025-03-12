@@ -3,15 +3,23 @@ import pandas as pd
 import base64
 from PIL import Image
 from io import BytesIO, StringIO
+import importlib
 
 import page_01
 import page_02
 import page_03
 import page_04
 import page_05
-import page_06
-import page_07
-import page_08
+import pages.faq
+import pages.hero_section
+import pages.how_it_works
+
+# Dynamic imports for pages
+PAGE_MODULES = {
+    "hero_section": "pages.hero_section",
+    "how_it_works": "pages.how_it_works",
+    "faq": "pages.faq"
+}
 
 # 1. Define CSS styles
 st.markdown(
@@ -59,34 +67,42 @@ def navigation_bar():
     with col1:
         if st.button("Home"):
             st.session_state.page = "main"
+            st.write(f"Switching to: {st.session_state.page}")
 
     with col2:
         if st.button("Dashboard"):
             st.session_state.page = "dashboard"
+            st.write(f"Switching to: {st.session_state.page}")
 
     with col3:
         if st.button("Notifications"):
             st.session_state.page = "notifications"
+            st.write(f"Switching to: {st.session_state.page}")
 
     with col4:
         if st.button("Reserved"):
             st.session_state.page = "page_05"
+            st.write(f"Switching to: {st.session_state.page}")
 
     with col5:
         if st.button("Profile"):
             st.session_state.page = "profile"
+            st.write(f"Switching to: {st.session_state.page}")
 
     # Left-side buttons (Hero section, How it works, FAQ)
     st.markdown('<div class="left-side-buttons">', unsafe_allow_html=True)
 
     if st.button("Hero Section"):
         st.session_state.page = "hero_section"
+        st.write(f"Switching to: {st.session_state.page}")
 
     if st.button("How it Works"):
         st.session_state.page = "how_it_works"
+        st.write(f"Switching to: {st.session_state.page}")
 
     if st.button("FAQ"):
         st.session_state.page = "faq"
+        st.write(f"Switching to: {st.session_state.page}")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -99,6 +115,7 @@ def main():
 
     st.markdown("### Current Page: " + st.session_state.page)
 
+    # Load the page dynamically
     if st.session_state.page == "main":
         page_01.show_page()
     elif st.session_state.page == "dashboard":
@@ -109,12 +126,11 @@ def main():
         page_04.show_page()
     elif st.session_state.page == "page_05":
         page_05.show_page()
-    elif st.session_state.page == "hero_section":
-        page_06.show_page()  # Hero section
-    elif st.session_state.page == "how_it_works":
-        page_07.show_page()  # How it works
-    elif st.session_state.page == "faq":
-        page_08.show_page()  # FAQ
+    elif st.session_state.page in PAGE_MODULES:
+        # Dynamically import the page
+        module_name = PAGE_MODULES[st.session_state.page]
+        page_module = importlib.import_module(module_name)
+        page_module.show_page()
 
 if __name__ == "__main__":
     main()
