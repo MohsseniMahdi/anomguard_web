@@ -82,7 +82,7 @@ if page == "Dashboard":
     # Show the response message in a box if it exists
 
     if st.session_state.response_message:
-        if st.session_state.response_message == "No Fraud Detected.":
+        if st.session_state.response_message == "No Fraud Detected!!!":
             message_color = "green"
         else:
             message_color = "red"
