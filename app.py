@@ -70,9 +70,9 @@ if page == "Dashboard":
                 if 'prediction' in response_data:
                     predictions = response_data['prediction']
                     if all(p == 0 for p in predictions):
-                        st.session_state.response_message = "No Fraud Detected."
+                        st.session_state.response_message = "No Fraud Detected!!!"
                     else:
-                        st.session_state.response_message = "Fraud Detected."
+                        st.session_state.response_message = "Fraud Detected"
 
             except requests.exceptions.JSONDecodeError:
                 st.session_state.response_message = "Failed to decode JSON from response."
