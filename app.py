@@ -80,6 +80,7 @@ if page == "Dashboard":
                 response_data = response.json()
                 if 'prediction' in response_data:
                     predictions = response_data['prediction']
+
                     predictions = [int(p) for p in predictions]
                     count_non_fraud = predictions.count(0)
                     count_fraud = predictions.count(1)
@@ -96,6 +97,7 @@ if page == "Dashboard":
 
                     else:
                         st.session_state.response_message = "No Fraud Detected!!!"
+
 
             except requests.exceptions.JSONDecodeError:
                 st.session_state.response_message = "Failed to decode JSON from response."
