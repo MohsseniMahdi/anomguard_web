@@ -39,7 +39,7 @@ def set_background(png_file):
 
 # Correctly construct the path to the image
 script_dir = os.path.dirname(__file__)
-image_path = os.path.join(script_dir, 'assets', 'credit_card_fraud.jpg')
+image_path = os.path.join(script_dir, 'assets', 'Guard.jpg')
 set_background(image_path)
 
 page = option_menu(
@@ -127,6 +127,7 @@ elif page == "How It Works":
         recall_logreg_prepro = recall_score(y_test['Class'], st.session_state.result)
 
         predictions = st.session_state.result
+        print(predictions)
 
             # Create DataFrame for Table
         df_results = pd.DataFrame({
@@ -158,6 +159,72 @@ elif page == "How It Works":
         """
         result_html += "</div>"
         st.markdown(result_html, unsafe_allow_html=True)
+
+
+        table_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                .styled-table {{
+                    width: 25%;  /* Set table width */
+                    margin: auto;  /* Center table */
+                    border-collapse: collapse;
+                    font-size: 18px;
+                }}
+                .styled-table th, .styled-table td {{
+                    padding: 10px;
+                    text-align: center;
+                    border: 1px solid #ddd;
+                    background-color: white;
+
+                }}
+                .styled-table th:first-child,
+                .styled-table td:first-child {{
+                    width: 80px;
+                    text-align: center;
+                }}
+                .fraud {{ color: red; font-weight: bold; }}
+                .not-fraud {{ color: green; font-weight: bold; }}
+            </style>
+        </head>
+        <body>
+        <table class="styled-table" >
+            <thead>
+                <tr>
+                    <th>Row Num</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+
+        for index, row in df_results.iterrows():
+            status_class = "fraud" if row["Status"] == "Fraud" else "not-fraud"
+            table_html += f"""
+            <tr>
+                <td>{row["Row num"]}</td>
+                <td class="{status_class}">{row["Status"]}</td>
+            </tr>
+            """
+
+        table_html += "</tbody></table></body></html>"
+
+        components.html(table_html, height=300)
+    if st.session_state.result is not None and st.session_state.x_test_file is None:
+
+        predictions = st.session_state.result
+
+        # Create DataFrame for Table
+        df_results = pd.DataFrame({
+            "Row num": range(1, len(predictions) + 1),
+            "Status": ["Fraud" if p == 1 else "Not Fraud" for p in predictions]
+        })
+
+        # Define styling for color-coding
+        def highlight_fraud(val):
+            color = 'red' if val == "Fraud" else 'green'
+            return f'color: {color}; font-weight: bold;'
 
 
         table_html = f"""
