@@ -4,9 +4,12 @@ from streamlit_option_menu import option_menu
 import base64
 import requests
 import os
+from sklearn.metrics import recall_score
+import streamlit.components.v1 as components
 
 st.set_page_config(page_title="AnomGuard", layout="wide")
 
+baseUrl = 'https://anomguardapi-472205353902.europe-west1.run.app'
 
 def get_base64(bin_file):
     with open(bin_file, 'rb') as f:
@@ -39,17 +42,19 @@ script_dir = os.path.dirname(__file__)
 image_path = os.path.join(script_dir, 'assets', 'credit_card_fraud.jpg')
 set_background(image_path)
 
-# Use option_menu instead of st_navbar
 page = option_menu(
-    None,  # No title for the menu
-    ["Dashboard", "How It Works", "Heros", "Faq", "Profile"],  # Menu options
-    icons=["house", "book", "code-slash", "people", "person"],  # Optional icons (add as needed)
-    menu_icon="cast",  # Optional menu icon
-    default_index=0,  # Default selected page
-    orientation="horizontal",  # Display horizontally
+    None,
+    ["Dashboard", "How It Works", "Heros", "Faq", "Profile"],
+    icons=["house", "book", "code-slash", "people", "person"],
+    menu_icon="cast",
+    default_index=0,
+    orientation="horizontal",
 )
 
 if page == "Dashboard":
+    st.session_state.file = None
+    st.session_state.x_test_file = None
+    st.session_state.result = None
     uploaded_files = st.file_uploader(
         "Choose a CSV file", accept_multiple_files=True
     )
@@ -58,28 +63,46 @@ if page == "Dashboard":
         st.session_state.response_message = None
 
     if uploaded_files:
-        # url = 'https://anomguard.lewagon.ai/predict'
-        url = 'https://anomguardapi-472205353902.europe-west1.run.app/predict'
+        url = f'{baseUrl}/predict'
+        # url = 'http://localhost:8000/predict'
         for uploaded_file in uploaded_files:
-            files = {'file': (uploaded_file.name, uploaded_file.read(), uploaded_file.type)}
-            response = requests.post(url, files=files)
-            print(response.json())
-            try:
 
+            if "y_test" in uploaded_file.name:
+
+                st.session_state.file = uploaded_file
+            else :
+                files = {'file': (uploaded_file.name, uploaded_file.read(), uploaded_file.type)}
+
+                response = requests.post(url, files=files)
+
+                st.session_state.x_test_file = uploaded_file
+            try:
                 response_data = response.json()
                 if 'prediction' in response_data:
                     predictions = response_data['prediction']
-                    if all(p == 0 for p in predictions):
-                        st.session_state.response_message = "No Fraud Detected!!!"
+
+                    predictions = [int(p) for p in predictions]
+                    count_non_fraud = predictions.count(0)
+                    count_fraud = predictions.count(1)
+                    fraud_indices = [i + 1 for i, p in enumerate(predictions) if p == 1]
+                    st.session_state.result = predictions
+                    if fraud_indices:
+                    # all(p == 0 for p in predictions):
+                        # st.session_state.response_message = "No Fraud Detected."
+                        if len(fraud_indices) < 6:
+
+                            st.session_state.response_message = f"{len(fraud_indices)} Fraud transaction(s) found in row number {', '.join(map(str, fraud_indices))}!!!"
+                        else:
+                            st.session_state.response_message = f"{len(fraud_indices)} Fraud transaction(s) found!!!!"
+
                     else:
-                        st.session_state.response_message = "Fraud Detected"
+                        st.session_state.response_message = "No Fraud Detected!!!"
+
 
             except requests.exceptions.JSONDecodeError:
                 st.session_state.response_message = "Failed to decode JSON from response."
             except Exception as e:
               st.session_state.response_message = f"An unexpected error occurred: {e}"
-
-    # Show the response message in a box if it exists
 
     if st.session_state.response_message:
         if st.session_state.response_message == "No Fraud Detected!!!":
@@ -99,7 +122,100 @@ if page == "Dashboard":
         )
 
 elif page == "How It Works":
-    st.write("## Documentation")
+
+    if st.session_state.file is not None and st.session_state.result is not None:
+        y_test = pd.read_csv(st.session_state.file)
+
+        recall_logreg_prepro = recall_score(y_test['Class'], st.session_state.result)
+
+        predictions = st.session_state.result
+
+            # Create DataFrame for Table
+        df_results = pd.DataFrame({
+            "Row num": range(1, len(predictions) + 1),
+            "Status": ["Fraud" if p == 1 else "Not Fraud" for p in predictions]
+        })
+
+        # Define styling for color-coding
+        def highlight_fraud(val):
+            color = 'red' if val == "Fraud" else 'green'
+            return f'color: {color}; font-weight: bold;'
+
+
+        result_html = f"""
+        <div style="
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+            margin: auto;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        ">
+            <p style="color: black; font-size: 24px; font-weight: bold;">
+                This model has a Recall Score: {recall_logreg_prepro:.4f}
+            </p>
+        """
+        result_html += "</div>"
+        st.markdown(result_html, unsafe_allow_html=True)
+
+
+        table_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                .styled-table {{
+                    width: 25%;  /* Set table width */
+                    margin: auto;  /* Center table */
+                    border-collapse: collapse;
+                    font-size: 18px;
+                }}
+                .styled-table th, .styled-table td {{
+                    padding: 10px;
+                    text-align: center;
+                    border: 1px solid #ddd;
+                    background-color: white;
+
+                }}
+                .styled-table th:first-child,
+                .styled-table td:first-child {{
+                    width: 80px;
+                    text-align: center;
+                }}
+                .fraud {{ color: red; font-weight: bold; }}
+                .not-fraud {{ color: green; font-weight: bold; }}
+            </style>
+        </head>
+        <body>
+        <table class="styled-table" >
+            <thead>
+                <tr>
+                    <th>Row Num</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+
+        for index, row in df_results.iterrows():
+            status_class = "fraud" if row["Status"] == "Fraud" else "not-fraud"
+            table_html += f"""
+            <tr>
+                <td>{row["Row num"]}</td>
+                <td class="{status_class}">{row["Status"]}</td>
+            </tr>
+            """
+
+        table_html += "</tbody></table></body></html>"
+
+        components.html(table_html, height=300)
+
+
+
+
 elif page == "Heros":
     st.write("## hero Section")
 elif page == "Faq":
@@ -159,8 +275,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
-#  div[data-testid="stFileUploader"] div {
-        #     padding: 30px !important;  /* Increase padding */
-        # }
