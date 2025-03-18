@@ -127,7 +127,6 @@ elif page == "How It Works":
         recall_logreg_prepro = recall_score(y_test['Class'], st.session_state.result)
 
         predictions = st.session_state.result
-        print(predictions)
 
             # Create DataFrame for Table
         df_results = pd.DataFrame({
