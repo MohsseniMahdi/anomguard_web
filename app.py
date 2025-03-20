@@ -65,78 +65,85 @@ if page == "Dashboard":
         "Choose a CSV file", accept_multiple_files=True
     )
 
-    # Define file paths
-    # sample_x_test_path = os.path.join(script_dir, 'assets', 'X_test.csv')
-    # sample_y_test_path = os.path.join(script_dir, 'assets', 'y_test.csv')
 
-    st.markdown(
-        """
-        <style>
-            .bottom-left-container {
-                position: fixed;
-                bottom: 20px;
-                left: 20px;
-                z-index: 1000;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            .download-icon-button {
-                background: none;
-                border: none;
-                cursor: pointer;
-                font-size: 24px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                color: white;
-            }
+    def load_file(file_path):
+        with open(file_path, "rb") as f:
+            return f.read()
 
-                        /* Tooltip styling */
-            .download-icon-button .tooltip {
-                visibility: hidden;
-                width: 160px;
-                background-color: black;
-                color: white;
-                text-align: center;
-                padding: 5px;
-                border-radius: 5px;
-                position: absolute;
-                left: 50px; /* Moves the tooltip to the right */
-                top: 50%; /* Aligns it in the middle */
-                transform: translateY(-50%); /* Centers vertically */
-                font-size: 14px;
-                opacity: 0;
-                transition: opacity 0.3s, left 0.3s;
-                white-space: nowrap;
-            }
-            .download-icon-button:hover .tooltip {
-                visibility: visible;
-                opacity: 1;
-                left: 60px; /* Moves slightly further on hover */
-            }
-        </style>
+    # Load CSV files and encode them as base64
+    non_fraud_data = base64.b64encode(load_file("assets/X_test_nonfraud.csv")).decode()
+    fraud_data = base64.b64encode(load_file("assets/X_test_fraud.csv")).decode()
+    mixed_data = base64.b64encode(load_file("assets/X_test_2fraud.csv")).decode()
 
-        <div class="bottom-left-container">
-            <a href="X_test.csv" download="X_test_nonfraud.csv">
-                <button class="download-icon-button">📥
-                    <span class="tooltip">Download Non-Fraud Data</span>
-                </button>
-            </a>
-            <a href="y_test.csv" download="X_test_fraud.csv">
-                <button class="download-icon-button">⚠️
-                    <span class="tooltip">Download Fraud Data</span>
-                </button>
-            </a>
-            <a href="y_test.csv" download="X_test_mix.csv">
-                <button class="download-icon-button">🔄
-                    <span class="tooltip">Download Mixed Data</span>
-                </button>
-            </a>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f"""
+    <style>
+        .bottom-left-container {{
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }}
+
+        .download-button {{
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            position: relative;
+        }}
+
+        /* Tooltip styling */
+        .download-button .tooltip {{
+            visibility: hidden;
+            width: 160px;
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 5px;
+            border-radius: 5px;
+            position: absolute;
+            left: 50px; /* Moves the tooltip to the right */
+            top: 50%; /* Aligns it in the middle */
+            transform: translateY(-50%); /* Centers vertically */
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s, left 0.3s;
+            white-space: nowrap;
+        }}
+
+        .download-button:hover .tooltip {{
+            visibility: visible;
+            opacity: 1;
+            left: 60px; /* Moves slightly further on hover */
+        }}
+    </style>
+
+    <div class="bottom-left-container">
+        <a href="data:file/csv;base64,{non_fraud_data}" download="X_test_nonfraud.csv">
+            <button class="download-button">📥
+                <span class="tooltip">Download Non-Fraud Data</span>
+            </button>
+        </a>
+        <a href="data:file/csv;base64,{fraud_data}" download="X_test_fraud.csv">
+            <button class="download-button">⚠️
+                <span class="tooltip">Download Fraud Data</span>
+            </button>
+        </a>
+        <a href="data:file/csv;base64,{mixed_data}" download="X_test_2fraud.csv">
+            <button class="download-button">🔄
+                <span class="tooltip">Download Mixed Data</span>
+            </button>
+        </a>
+    </div>
+""", unsafe_allow_html=True)
+
 
     # Initialize session state to store the response message
     if "response_message" not in st.session_state:
@@ -155,6 +162,7 @@ if page == "Dashboard":
                 response = requests.post(url, files=files)
 
                 st.session_state.x_test_file = uploaded_file
+                print('response---', response)
             try:
                 response_data = response.json()
                 if 'prediction' in response_data:
@@ -252,68 +260,68 @@ elif page == "Model Specs":
         st.markdown(result_html, unsafe_allow_html=True)
 
 
-        def encode_image(image_path):
-            with open(image_path, "rb") as img_file:
-                return base64.b64encode(img_file.read()).decode()
+    def encode_image(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
 
-        # Encode images
-        graph1_img = encode_image("assets/Learning_Curve.png")
-        graph2_img = encode_image("assets/Confusion_Matrix.png")
+    # Encode images
+    graph1_img = encode_image("assets/Learning_Curve.png")
+    graph2_img = encode_image("assets/Confusion_Matrix.png")
 
-        # HTML Template to Display Images
-        graph_html = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                .graph-container {{
-                    background-color: white;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-                    width: 85%;
-                    margin: auto;
-                    text-align: center;
-                }}
-                .graph-box {{
-                    text-align: center;
-                    margin-bottom: 30px;
-                }}
-                .graph-img {{
-                    border-radius: 10px;
-                    width: 70%;
-                    object-fit: cover;
-                    border: 2px solid #ddd;
-                }}
-                .graph-title {{
-                    font-size: 20px;
-                    font-weight: bold;
-                    margin-bottom: 10px;
-                }}
-                .graph-description {{
-                    font-size: 16px;
-                    color: #555;
-                    margin-bottom: 20px;
-                }}
-                </style>
-            </head>
-            <body>
-                <div class="graph-container">
-                    <div class="graph-box">
-                        <div class="graph-title">Learning Curve Logistic Regression Model</div>
-                        <img class="graph-img" src="data:image/png;base64,{graph1_img}" alt="Graph 1"/>
-                    </div>
-                    <div class="graph-box">
-                        <div class="graph-title">Confusion Matrix For Test Dataset </div>
-                        <img class="graph-img" src="data:image/png;base64,{graph2_img}" alt="Graph 2"/>
-                    </div>
+    # HTML Template to Display Images
+    graph_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+            .graph-container {{
+                background-color: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+                width: 85%;
+                margin: auto;
+                text-align: center;
+            }}
+            .graph-box {{
+                text-align: center;
+                margin-bottom: 30px;
+            }}
+            .graph-img {{
+                border-radius: 10px;
+                width: 70%;
+                object-fit: cover;
+                border: 2px solid #ddd;
+            }}
+            .graph-title {{
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }}
+            .graph-description {{
+                font-size: 16px;
+                color: #555;
+                margin-bottom: 20px;
+            }}
+            </style>
+        </head>
+        <body>
+            <div class="graph-container">
+                <div class="graph-box">
+                    <div class="graph-title">Learning Curve Logistic Regression Model</div>
+                    <img class="graph-img" src="data:image/png;base64,{graph1_img}" alt="Graph 1"/>
                 </div>
-            </body>
-            </html>
-        """
+                <div class="graph-box">
+                    <div class="graph-title">Confusion Matrix For Test Dataset </div>
+                    <img class="graph-img" src="data:image/png;base64,{graph2_img}" alt="Graph 2"/>
+                </div>
+            </div>
+        </body>
+        </html>
+    """
 
-        # Render the HTML inside Streamlit
-        components.html(graph_html, height=1500)
+    # Render the HTML inside Streamlit
+    components.html(graph_html, height=1500)
 
 
 elif page == "Docs":
