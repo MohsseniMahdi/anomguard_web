@@ -291,8 +291,118 @@ elif page == "How It Works":
         })
 
 
+ if st.session_state.file is not None and st.session_state.result is not None:
+        y_test = pd.read_csv(st.session_state.file)
+
+        recall_logreg_prepro = recall_score(y_test['Class'], st.session_state.result)
+
+        predictions = st.session_state.result
+
+            # Create DataFrame for Table
+        df_results = pd.DataFrame({
+            "Row num": range(1, len(predictions) + 1),
+            "Status": ["Fraud" if p == 1 else "Not Fraud" for p in predictions]
+        })
+
+        csv_data = convert_df_to_csv(df_results)
+
+        result_html = f"""
+        <div style="
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            margin: auto;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        ">
+            <p style="color: black; font-size: 24px; font-weight: bold;">
+                This model has a Recall Score: {recall_logreg_prepro:.4f}
+            </p>
+              <br>
+            <a href="data:file/csv;base64,{base64.b64encode(csv_data).decode()}" download="fraud_detection_results.csv">
+                <button style="
+                    color: black;
+                    border: none;
+                    padding: 10px 20px;
+                    font-size: 18px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                ">
+                    📥 Download Predictions
+                </button>
+            </a>
+        """
+        result_html += "</div>"
+        st.markdown(result_html, unsafe_allow_html=True)
 
 
+        def encode_image(image_path):
+            with open(image_path, "rb") as img_file:
+                return base64.b64encode(img_file.read()).decode()
+
+        # Encode images
+        graph1_img = encode_image("assets/Learning_Curve.png")
+        graph2_img = encode_image("assets/Confusion_Matrix.png")
+
+        # HTML Template to Display Images
+        graph_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                .graph-container {{
+                    background-color: white;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+                    width: 85%;
+                    margin: auto;
+                    text-align: center;
+                }}
+                .graph-box {{
+                    text-align: center;
+                    margin-bottom: 30px;
+                }}
+                .graph-img {{
+                    border-radius: 10px;
+                    width: 70%;
+                    object-fit: cover;
+                    border: 2px solid #ddd;
+                }}
+                .graph-title {{
+                    font-size: 20px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }}
+                .graph-description {{
+                    font-size: 16px;
+                    color: #555;
+                    margin-bottom: 20px;
+                }}
+                </style>
+            </head>
+            <body>
+                <div class="graph-container">
+                    <div class="graph-box">
+                        <div class="graph-title">Graph 1</div>
+                        <img class="graph-img" src="data:image/png;base64,{graph1_img}" alt="Graph 1"/>
+                        <div class="graph-description">This graph represents the sales trend over the past year.</div>
+                    </div>
+                    <div class="graph-box">
+                        <div class="graph-title">Graph 2</div>
+                        <img class="graph-img" src="data:image/png;base64,{graph2_img}" alt="Graph 2"/>
+                        <div class="graph-description">This graph shows the monthly active users in 2024.</div>
+                    </div>
+                </div>
+            </body>
+            </html>
+        """
+
+        # Render the HTML inside Streamlit
+        components.html(graph_html, height=1000)
 
 elif page == "Heros":
     # st.write("## hero Section")
