@@ -26,7 +26,12 @@ def set_background(png_file):
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        opacity: 0.9;
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
+
+    }}
+     [data-testid="stAppViewContainer"].fade-out {{
+        opacity: 0.5; /* Faded opacity */
     }}
     [data-testid="stHeader"] {{
         background-color: rgba(0, 0, 0, 0);
@@ -39,7 +44,7 @@ def set_background(png_file):
 
 # Correctly construct the path to the image
 script_dir = os.path.dirname(__file__)
-image_path_background = os.path.join(script_dir, 'assets', 'final_back.png')
+image_path_background = os.path.join(script_dir, 'assets', 'background3.png')
 image_path = os.path.join(script_dir, 'assets')
 set_background(image_path_background)
 
@@ -282,28 +287,29 @@ elif page == "Model Specs":
 
 
 
+# Custom CSS for tab font size
+
 
 elif page == "Docs":
+
+
     #Create tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "1. Introduction",
-        "2. Tech Stack ",
-        "3. Architecture",
-        "4. Key Features",
+        "2. ML Workflow",
+        "3. Tech Stack ",
+        "4. Architecture",
+        "6. Key Features",
         "5. Future Improvements"
     ])
-    """" .st-emotion-cache-wq5ihp {
-    font-family: "Source Sans Pro", sans-serif;
-    font-size: 0.875rem;
-    color: inherit;
-}
-"""
+
+
     common_style_docs ="""
             <style>
                 /* General Styles */
                 .st-emotion-cache-wq5ihp {
-                    font-family: "Source Sans Pro", sans-serif;
-                    font-size: 1.875rem;
+                    font-family: "Open Sans, sans-serif;
+                    font-size: 2.875rem !important;
                     color: inherit;
                 }
 
@@ -350,11 +356,18 @@ elif page == "Docs":
                 .tech-item span { font-size: 16px; }
                 .tech-container { display: flex; flex-wrap: wrap; justify-content: center;}
                 .tech-container div { width: 40%; min-width: 250px; margin: 10px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-
+                /* Tab Styling (Adjust width here) */
+                .stTabs[data-baseweb="tab-list"] button {
+                    padding: 10px 15px; /* Adjust padding for size */
+                    font-size:24px;     /* Adjust font size */
+                    font-weight: bold;
+                    }
                 }
 
             </style>
         """
+
+
     # Tab 1: Introduction
 
     with tab1:
@@ -384,11 +397,38 @@ elif page == "Docs":
         </body>
         </html>
         """
-        components.html(introduction_html, height=550, scrolling=True)
-    # Tab 2: Tech Stack
-    docker_logo_path = os.path.join(image_path, 'docker-mark-blue.jpg')
+        components.html(introduction_html, height=600, scrolling=True)
 
     with tab2:
+        workflow_html = f"""
+         <html>
+        {common_style_docs}
+        <body>
+            <div class="container">
+            <h2>Workflow</h2>
+                <ul>
+                <h3>Data Aqcuisition</h3>
+                <ul><li><p> Data was loaded in Google Cloud Storage and stored in a table on BigQuery. We cached the data on our local machines for testing and evaulation purposes.</p></li></ul>
+
+                <h3>Preprocessing</h3>
+                <ul><li><p>Checked for missing values and removed 1,081 duplicate entries.</p>
+                    <li><p>Applied cyclical feature transformation on ‘Time’ for better model interpretation.</p>
+                    <li><p>Utilized BorderlineSMOTE to generate synthetic samples for the minority class, addressing the class imbalance.</p>
+                    <li><p>Implemented Tomek Links to remove noise from the dataset.</p>
+
+                </ul>
+                <h3>Model Training</h3>
+                 <ul><li><p>Employed Logistic Regression and.</p>
+                    <li><p>Focused on recall and Precision-Recall AUC metrics to evaluate model performance.</p>
+
+                </ul>
+        <div/>
+        </body>
+        </html>
+
+        """
+        components.html(workflow_html, height=550, scrolling=True)
+    with tab3:
         tech_stack_html = f"""
         <html>
         {common_style_docs}
@@ -457,7 +497,7 @@ elif page == "Docs":
 
         """
         components.html(tech_stack_html, height=800, scrolling=True)
-    with tab3:
+    with tab4:
         archi_html= f"""
         <html>
         {common_style_docs}
@@ -493,45 +533,59 @@ elif page == "Docs":
                 <li><strong>Model Prediction:</strong><p> The API retrieves the logistic regression model from Cloud Storage, performs fraud prediction, and generates results.</p></li>
                 <li><strong>Result Display:</strong><p> The API sends the prediction results back to Streamlit, which displays them to the user.</p></li>
             </ul>
-
+        </div>
         </body>
         </html>
         """
         components.html(archi_html, height=1000, scrolling=True)
-    with tab4:
+    with tab5:
         key_html =f"""
         <head>
         {common_style_docs}
         <body>
+        <div class="container">
         <h2>Key Features</h2>
         <ul>
             <li><strong>Fraud Detection:</strong> Accurate detection of fraudulent credit card transactions using a trained machine learning model.</li>
+            <br/>
             <li><strong>User-Friendly Interface:</strong> Simple and intuitive web interface for easy data upload and result interpretation.</li>
+            <br/>
             <li><strong>Scalable API:</strong> Google Cloud Run deployment ensures the API can handle varying loads.</li>
+            <br/>
             <li><strong>Cloud Storage:</strong> Model persistence and retrieval is handled by Google Cloud Storage buckets.</li>
+            <br/>
             <li><strong>Data Access:</strong> BigQuery is used for efficient access and querying of transaction data.</li>
+            <br/>
             <li><strong>SMOTE Data Balancing:</strong> The model is trained on data balanced using SMOTE to handle class imbalance.</li>
 
         </ul>
+        </div>
     </body>
     </head>
     """
         components.html(key_html, height=500, scrolling=True)
 
-    with tab5:
+    with tab6:
         fut_html =f"""
         <head>
         {common_style_docs}
         <body>
+        <div class="container">
         <h2>Future Improvements</h2>
-        <ul>
+                <ul>
             <li><strong>Real-time Processing:</strong> Implement real-time fraud detection capabilities for immediate alerts.</li>
+            <br/>
             <li><strong>Enhanced Visualization:</strong> Add more detailed visualizations of transaction data and fraud patterns for better analysis.</li>
+            <br/>
             <li><strong>Integration:</strong> Seamlessly integrate with bank security architectures for automated alerts and responses.</li>
+            <br/>
             <li><strong>Model Retraining:</strong> Implement a system for automated model retraining on new data to maintain accuracy.</li>
+            <br/>
             <li><strong>Expanded Feature Set:</strong> Add features like user authentication, detailed transaction reports, and customizable alert thresholds.</li>
+            <br/>
             <li><strong>Explainable AI:</strong> Incorporate techniques to provide explanations for fraud predictions, improving transparency and trust.</li>
             </ul>
+        </div>
         </body>
         </html>
 
@@ -626,7 +680,7 @@ elif page == "User Manual":
         </div>
 
         <div class="bottom-container">
-            <p class="other-text-title">⚙️ Ideal Integration</p>
+            <p class="other-text-title">⚙️ Ideal Scenario</p>
             <p class="other-text">In an ideal scenario, this app and its underlying fraud detection model would be seamlessly integrated into a bank's security architecture. This would enable real-time monitoring of transactions and automatic notifications to responsible personnel upon the detection of fraudulent activities, ensuring swift and effective response.</p>
         </div>
 
@@ -678,15 +732,32 @@ st.markdown(
     }
     div[data-testid="stFileUploader"] {
                 width: 50%; /* Adjust the width as needed */
-                margin: auto; /* Center the uploader horizontally */
+                .st-emotion-cache-wq5ihp {
+                font-family: "Open Sans", sans-serif;
+                font-size: 1.875rem;
+                font-weight: bold;
+                color: white;
+    }
             }
 
     /* Adjust the file drop area */
     div[data-testid="stFileDropzone"] {
         min-height: 200px !important; /* Adjust the height */
         padding: 20px !important;
+        align: left;
     }
+     div[data-baseweb="tab-list"] button {
+         .st-emotion-cache-wq5ihp {
+                font-family: "Open Sans", sans-serif;
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: white;
+            }
+
+           }
+
     </style>
+
     """,
     unsafe_allow_html=True,
 )
