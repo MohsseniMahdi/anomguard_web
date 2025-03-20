@@ -144,7 +144,6 @@ if page == "Dashboard":
 
     if uploaded_files:
         url = f'{baseUrl}/predict'
-        # url = 'http://localhost:8000/predict'
         for uploaded_file in uploaded_files:
 
             if "y_test" in uploaded_file.name:
