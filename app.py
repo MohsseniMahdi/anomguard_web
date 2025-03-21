@@ -630,7 +630,7 @@ elif page == "Docs":
 elif page == "User Manual":
     usage_manual_html = """
     <style>
-        
+
         .top-container {
             background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
             padding: 10px;
@@ -750,7 +750,6 @@ elif page == "Team":
             margin: auto;
             text-align: center;
             font-family: 'Montserrat', sans-serif;
-            font-weight: bold;
           }}
           .team-grid {{
             display: grid;
@@ -778,7 +777,6 @@ elif page == "Team":
             flex: 1;
           }}
           .team-name {{
-            font-family:'Antonio', sans serif;
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 5px;
@@ -898,7 +896,7 @@ st.markdown(
     div[data-testid="stFileUploader"] {
                 width: 50%; /* Adjust the width as needed */
                 .st-emotion-cache-wq5ihp {
-                font-family: "Open Sans", sans-serif;
+                font-family: "Antonio", sans-serif;
                 font-size: 1.875rem;
                 font-weight: bold;
                 color: white;
