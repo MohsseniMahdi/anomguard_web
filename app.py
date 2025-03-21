@@ -340,9 +340,10 @@ elif page == "Docs":
 
     common_style_docs ="""
             <style>
+                @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Antonio:wght@400;700&display=swap')
                 /* General Styles */
                 .st-emotion-cache-wq5ihp {
-                    font-family: "Open Sans, sans-serif;
+                    font-family: 'Antonio', sans-serif;
                     font-size: 2.875rem !important;
                     color: inherit;
                 }
@@ -355,7 +356,7 @@ elif page == "Docs":
                     width: 80%;
                     margin: 20px auto;
                     text-align: justified;
-                    font-family: 'Open Sans', sans-serif;
+                    font-family: 'Montserrat', sans-serif;
                 }
 
                 /* Heading Styles */
@@ -629,6 +630,7 @@ elif page == "Docs":
 elif page == "User Manual":
     usage_manual_html = """
     <style>
+        
         .top-container {
             background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
             padding: 10px;
@@ -637,7 +639,7 @@ elif page == "User Manual":
             width: 80%;
             margin: 20px auto;
             text-align: center;
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
         .bottom-container {
             background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
@@ -647,7 +649,7 @@ elif page == "User Manual":
             width: 80%;
             margin: 20px auto;
             text-align: center;
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
         .manual-container {
             background: linear-gradient(135deg, #e3f2fd, #f8f9fa); /* Light gradient */
@@ -657,7 +659,7 @@ elif page == "User Manual":
             width: 80%;
             margin:20px auto;
             text-align: center;
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Montserrat', sans-serif;
 
         }
         .manual-title {
@@ -677,36 +679,36 @@ elif page == "User Manual":
             color: #555;
         }
         .other-text-title {
-            font-size: 14px;
+            font-size: 18px;
             font-weight: bold;
             color: #333;
             margin-top: 10px;
         }
         .other-text {
-            font-size: 14px;
+            font-size: 16px;
             color: #333;
             margin-top: 10px;
             text-align: left;
         }
     </style>
         <div class="top-container">
-            <p class="other-text-title">🎯 Intended Audience</p>
+            <p class="other-text-title">Intended Audience</p>
             <p class="other-text">This web app is intended for bank employees and security personnel who need to analyze transaction data for potential fraud. It provides a user-friendly interface to upload transaction files and quickly identify fraudulent activities.</p>
         </div>
 
         <div class="manual-container">
-            <p class="manual-title">📖 How to Use This Web App</p>
+            <p class="manual-title">How to Use This Web App</p>
 
-            <p class="manual-step">1️⃣ Prepare Your Data</p>
+            <p class="manual-step"> Step 1: Prepare Your Data</p>
             <p class="manual-text">Ensure your transaction file is already transformed into CSV format and has 30 columns.</p>
 
-            <p class="manual-step">2️⃣ Upload the File</p>
+            <p class="manual-step">Step 2: Upload the File</p>
             <p class="manual-text">Go to the Dashboard and use the file uploader to select your transaction file.</p>
 
-            <p class="manual-step">3️⃣ Wait for the Fraud Detection</p>
+            <p class="manual-step">Step 3: Wait for the Fraud Detection</p>
             <p class="manual-text">The system will analyze transactions and detect fraudulent activities.</p>
 
-            <p class="manual-step">4️⃣ Interpreting Results</p>
+            <p class="manual-step">Step 4: Interpreting Results</p>
             <p class="manual-text">
                 ✅ <span style="color: green;">No fraud detected:</span> You'll see a green message. <br>
                 ❌ <span style="color: red;">Fraud detected:</span> You'll see a red message with fraud row numbers.
@@ -714,7 +716,7 @@ elif page == "User Manual":
         </div>
 
         <div class="bottom-container">
-            <p class="other-text-title">⚙️ Ideal Scenario</p>
+            <p class="other-text-title"> Ideal Scenario</p>
             <p class="other-text">In an ideal scenario, this app and its underlying fraud detection model would be seamlessly integrated into a bank's security architecture. This would enable real-time monitoring of transactions and automatic notifications to responsible personnel upon the detection of fraudulent activities, ensuring swift and effective response.</p>
         </div>
 
@@ -747,6 +749,8 @@ elif page == "Team":
             width: 85%;
             margin: auto;
             text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
           }}
           .team-grid {{
             display: grid;
@@ -774,6 +778,7 @@ elif page == "Team":
             flex: 1;
           }}
           .team-name {{
+            font-family:'Antonio', sans serif;
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 5px;
@@ -854,6 +859,8 @@ elif page == "Team":
 st.markdown(
     """
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Antonio:wght@400;700&display=swap');
+
     /* Navigation Bar Container */
     .st-emotion-cache-1v0mbdj {
         background-color: #333333; /* Dark background */
@@ -906,7 +913,7 @@ st.markdown(
     }
      div[data-baseweb="tab-list"] button {
          .st-emotion-cache-wq5ihp {
-                font-family: "Open Sans", sans-serif;
+                font-family: 'Antonio', sans-serif;
                 font-size: 1.5rem;
                 font-weight: bold;
                 color: white;
